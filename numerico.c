@@ -87,6 +87,10 @@ void FatLU(int n, int nsol)
     //double Xmax, dAmax; 
 
     for (i = 0; i < n; i++)
+        for (j = 0; j < n; j++)
+            (i == j)? (L[i][j] = 1.0): (L[i][j] = 0.0);
+
+    for (i = 0; i < n; i++)
         for (j = 0; j < n+1; j++)
         {
             printf("A[%i][%i]: ", i, j);
@@ -109,6 +113,38 @@ void FatLU(int n, int nsol)
         scanf("%lf", &Sy[0][j]);
     }
 
+    printf("\n\nSistema Recebido:\n");
+    for(i = 0, putchar('{'); i < n; i++) 
+    {
+        for(j = 0, printf("■("); j < n; j++)
+            printf("%+.4lfx_%i^((k))  ", A[i][j], j + 1);
+        printf("= %.4lf", A[i][n]);
+        if(i != (n-1))
+            printf("@");
+    }
+    for(j = 0; j < n; j++)
+        putchar(')');
+    printf("┤");
+
+    printf("\n\nTransforma-se o sistema nas seguintes matrizes:\n");
+    printf("[A^((0))]=|■(");
+    for(i = 0; i < n; i++)
+    {
+        for(j = 0, printf("■("); j < n; j++)
+        {
+            printf("%.4lf", A[i][j]);
+            j == (n-1) ? putchar(')') : putchar('&');
+        }
+        i == (n-1) ? printf(")|"): putchar('@');
+    }
+
+    printf("\n[b]=|■(");
+    for(i = 0; i < n; i++)
+    {
+        printf("%.4lf", A[i][n]);
+        i == (n-1) ? puts(")|"): putchar('@');
+    }
+
     for (j = 0; j < n; j++)
         for (i = j + 1; i < n; i++)
         {
@@ -116,6 +152,16 @@ void FatLU(int n, int nsol)
             for (k = 0; k < n; k++)
                 A[i][k] = A[i][k] - L[i][j] * A[j][k];
         }
+
+    printf("\nMatriz Triangular Superior (U):\n");
+    for(i = 0; i < n; putchar('\n'),i++)
+        for(j = 0; j < n; j++)
+            printf("%.4lf  ", A[i][j]);
+
+    printf("\nMatriz Triangular Inferior (L):\n");
+    for(i = 0; i < n; putchar('\n'), i++)
+        for(j = 0; j < n; j++)
+            printf("%.4lf  ", L[i][j]);
 
     for (w = 0; w < nsol + 1; w++)
     {
@@ -136,24 +182,26 @@ void FatLU(int n, int nsol)
         }
     }
 
-    printf("\n\n %d Solucoes de X:\n", nsol);
+    printf("\n*****************************************************\n");
+    printf("%d Solucoes de X:\n", nsol);
     for(w = 0; w < nsol+1; w++)
     {
-        printf("Sx(%d): ", w);
-        for(i=0; i < n; i++)
-            printf("%lf ", Sx[w][i]);
-        puts("\n");
+        printf("\nSx(%d): ", w);
+        for(j=0; j < n; j++)
+            printf("%.4lf ",Sx[w][j]);
     }
-    
-    printf("\n\n %d Solucoes de Y:\n", nsol);
+    printf("\n*****************************************************\n");
+
+    printf("\n*****************************************************\n");
+    printf("%d Solucoes de Y:\n", nsol);
     for(w = 0; w < nsol+1; w++)
     {
-        printf("Sy(%d): ", w);
-        for(i=0; i < n; i++)
-            printf("%lf ",Sy[w][i]);
-        puts("\n");
+        printf("\nSy(%d): ", w);
+        for(j=0; j < n; j++)
+            printf("%.4lf ",Sy[w][j]);
     }
-    
+    printf("\n*****************************************************\n");
+
     return;
 }
 
@@ -164,9 +212,9 @@ void ElimGauss(int n, int nsol)
     double A[n][n+1]; 
     double Sx[nsol+1][n];
     /*
-    double dr[nsol][n]; 
-    double Xmax, dAmax; 
-    */
+       double dr[nsol][n]; 
+       double Xmax, dAmax; 
+       */
 
     for (i = 0; i < n; i++)
         for (j = 0; j < n+1; j++)
@@ -182,6 +230,11 @@ void ElimGauss(int n, int nsol)
         scanf("%lf", &Sx[0][j]);
     }
 
+    printf("\n\nMatriz recebida:\n");
+    for(i = 0; i < n;  printf("= %.4lf\n", A[i][n]), i++)
+        for(j = 0; j < n; j++)
+            printf("%.4lf  ", A[i][j]);
+
     for (j = 0; j < n; j++)
         for (i = j + 1; i < n; i++)
         {
@@ -189,6 +242,11 @@ void ElimGauss(int n, int nsol)
             for (k = 0; k < n; k++)
                 A[i][k] = A[i][k] - m * A[j][k];
         }
+
+    printf("\nMatriz Triangular Superior:\n");
+    for(i = 0; i < n; printf("= %.4lf\n", A[i][n]), i++)
+        for(j = 0; j < n; j++)
+            printf("%.4lf  ", A[i][j]);
 
     for (w = 0; w < nsol + 1; w++)
         for (i = n - 1; i >= 0; i--)
@@ -199,14 +257,16 @@ void ElimGauss(int n, int nsol)
             Sx[w + 1][i] = Sx[w][i] + (A[i][n] - sum) / A[i][i];
         }
 
-    printf("\n\n %d Solucoes de X:\n", nsol);
+    printf("\n*****************************************************\n");
+    printf("%d Solucoes de X:\n", nsol);
     for(w = 0; w < nsol+1; w++)
     {
-        //printf("Sx(%d): ", w);
-        for(i=0; i < n; i++)
-            printf("%lf\t", Sx[w][i]);
-        puts("\n");
+        printf("\nSx(%d): ", w);
+        for(j=0; j < n; j++)
+            printf("%.4lf ",Sx[w][j]);
     }
+    printf("\n*****************************************************\n");
 
     return;
 }
+
